@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "encoding.h"
+#include "amo_emulation.h"
 
 // Currently, interrupts are always disabled in M-mode.
 #define disable_irqsave() (0)
@@ -42,7 +43,7 @@ typedef struct { int lock; } spinlock_t;
 
 static inline int spinlock_trylock(spinlock_t* lock)
 {
-  int res = atomic_swap(&lock->lock, -1);
+  int res = (int)amo_swapw((uint64_t)(&lock->lock), (uint64_t)-1);
   mb();
   return res;
 }

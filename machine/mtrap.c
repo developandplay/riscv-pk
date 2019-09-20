@@ -2,6 +2,7 @@
 #include "mcall.h"
 #include "htif.h"
 #include "atomic.h"
+#include "amo_emulation.h"
 #include "bits.h"
 #include "vm.h"
 #include "uart.h"
@@ -56,7 +57,7 @@ void printm(const char* s, ...)
 static void send_ipi(uintptr_t recipient, int event)
 {
   if (((disabled_hart_mask >> recipient) & 1)) return;
-  atomic_or(&OTHER_HLS(recipient)->mipi_pending, event);
+  amo_orw((uint64_t)&OTHER_HLS(recipient)->mipi_pending, (uint64_t)event);
   mb();
   *OTHER_HLS(recipient)->ipi = 1;
 }
@@ -112,8 +113,10 @@ static void send_ipi_many(uintptr_t* pmask, int event)
   uint32_t incoming_ipi = 0;
   for (uintptr_t i = 0, m = mask; m; i++, m >>= 1)
     if (m & 1)
-      while (*OTHER_HLS(i)->ipi)
-        incoming_ipi |= atomic_swap(HLS()->ipi, 0);
+      while (*OTHER_HLS(i)->ipi) {
+        incoming_ipi |= *HLS()->ipi;
+        *HLS()->ipi = 0;
+      }
 
   // if we got an IPI, restore it; it will be taken after returning
   if (incoming_ipi) {
@@ -196,8 +199,10 @@ static void machine_page_fault(uintptr_t* regs, uintptr_t dummy, uintptr_t mepc)
 {
   // MPRV=1 iff this trap occurred while emulating an instruction on behalf
   // of a lower privilege level. In that case, a2=epc and a3=mstatus.
+  uintptr_t* prev_regs = (uintptr_t*)((((uintptr_t)regs + MACHINE_STACK_SIZE) & (-MACHINE_STACK_SIZE)) - MENTRY_FRAME_SIZE);
+
   if (read_csr(mstatus) & MSTATUS_MPRV) {
-    return redirect_trap(regs[12], regs[13], read_csr(mbadaddr));
+    return redirect_trap(prev_regs[64], prev_regs[65], read_csr(mbadaddr));
   }
   bad_trap(regs, dummy, mepc);
 }

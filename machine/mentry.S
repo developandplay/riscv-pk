@@ -37,6 +37,7 @@ trap_vector:
 
   STORE a0, 10*REGBYTES(sp)
   STORE a1, 11*REGBYTES(sp)
+  STORE ra,  1*REGBYTES(sp)
 
   csrr a1, mcause
   bgez a1, .Lhandle_trap_in_machine_mode
@@ -58,6 +59,7 @@ trap_vector:
   # Go back whence we came.
   LOAD a0, 10*REGBYTES(sp)
   LOAD a1, 11*REGBYTES(sp)
+  LOAD ra,  1*REGBYTES(sp)
   csrrw sp, mscratch, sp
   mret
 
@@ -74,7 +76,8 @@ trap_vector:
   # Now, decode the cause(s).
 #ifdef __riscv_atomic
   addi a0, sp, MENTRY_IPI_PENDING_OFFSET
-  amoswap.w a0, x0, (a0)
+  mv a1, x0
+  call amo_swapw
 #else
   lw a0, MENTRY_IPI_PENDING_OFFSET(a0)
   sw x0, MENTRY_IPI_PENDING_OFFSET(a0)
@@ -101,7 +104,6 @@ trap_vector:
 
 .Lhandle_trap_in_machine_mode:
   # Preserve the registers.  Compute the address of the trap handler.
-  STORE ra, 1*REGBYTES(sp)
   STORE gp, 3*REGBYTES(sp)
   STORE tp, 4*REGBYTES(sp)
   STORE t0, 5*REGBYTES(sp)
@@ -194,6 +196,7 @@ restore_regs:
   addi sp, sp, -INTEGER_CONTEXT_SIZE
   STORE a0,10*REGBYTES(sp)
   STORE a1,11*REGBYTES(sp)
+  STORE ra, 1*REGBYTES(sp)
   li a1, TRAP_FROM_MACHINE_MODE_VECTOR
   j .Lhandle_trap_in_machine_mode
 
