@@ -231,6 +231,8 @@ do_reset:
 // save a0 and a1; arguments from previous boot loader stage:
 //  li x10, 0
 //  li x11, 0
+  csrr a0, mhartid
+  la a1, dtb
   li x12, 0
   li x13, 0
   li x14, 0
@@ -296,6 +298,10 @@ do_reset:
 #endif
   wfi
   j .LmultiHart
+
+  .align RISCV_PGSHIFT
+dtb:
+  .incbin "device.dtb"
 
   .bss
   .align RISCV_PGSHIFT
