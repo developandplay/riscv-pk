@@ -17,6 +17,10 @@ uintptr_t htif;
 #define TOHOST_OFFSET		((uintptr_t)tohost - (uintptr_t)__htif_base)
 #define FROMHOST_OFFSET		((uintptr_t)fromhost - (uintptr_t)__htif_base)
 
+uint8_t*  putchar_ptr  = (uint8_t*) (0x03000000);
+uint64_t* getchar_ptr  = (uint64_t*)(0x03001000);
+uint64_t* poweroff_ptr = (uint64_t*)(0x03002000);
+
 static void __check_fromhost()
 {
   uint64_t fh = fromhost;
@@ -47,15 +51,16 @@ static void __set_tohost(uintptr_t dev, uintptr_t cmd, uintptr_t data)
 int htif_console_getchar()
 {
   spinlock_lock(&htif_lock);
-    __check_fromhost();
-    int ch = htif_console_buf;
-    if (ch >= 0) {
-      htif_console_buf = -1;
-      __set_tohost(1, 0, 0);
-    }
+    //__check_fromhost();
+    //int ch = htif_console_buf;
+    //if (ch >= 0) {
+    //  htif_console_buf = -1;
+    //  __set_tohost(1, 0, 0);
+    //}
+    int ch = *getchar_ptr;
   spinlock_unlock(&htif_lock);
 
-  return ch - 1;
+  return ch;
 }
 
 static void do_tohost_fromhost(uintptr_t dev, uintptr_t cmd, uintptr_t data)
@@ -84,15 +89,17 @@ void htif_syscall(uintptr_t arg)
 void htif_console_putchar(uint8_t ch)
 {
   spinlock_lock(&htif_lock);
-    __set_tohost(1, 1, ch);
+  //  __set_tohost(1, 1, ch);
+    *putchar_ptr = ch;
   spinlock_unlock(&htif_lock);
 }
 
 void htif_poweroff()
 {
+  *poweroff_ptr = 0;
   while (1) {
-    fromhost = 0;
-    tohost = 1;
+    //fromhost = 0;
+    //tohost = 1;
   }
 }
 
