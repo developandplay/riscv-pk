@@ -17,9 +17,9 @@ uintptr_t htif;
 #define TOHOST_OFFSET		((uintptr_t)tohost - (uintptr_t)__htif_base)
 #define FROMHOST_OFFSET		((uintptr_t)fromhost - (uintptr_t)__htif_base)
 
-uint8_t*  putchar_ptr  = (uint8_t*) (0x03000000);
-uint64_t* getchar_ptr  = (uint64_t*)(0x03001000);
-uint64_t* poweroff_ptr = (uint64_t*)(0x03002000);
+uint64_t* getchar_ptr  = (uint64_t*)(0x00100000);
+uint64_t* putchar_ptr  = (uint64_t*)(0x00101000);
+uint64_t* poweroff_ptr = (uint64_t*)(0x00102000);
 
 static void __check_fromhost()
 {
