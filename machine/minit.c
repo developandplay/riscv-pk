@@ -5,6 +5,7 @@
 #include "fdt.h"
 #include "uart.h"
 #include "uart16550.h"
+#include "uart_lr.h"
 #include "finisher.h"
 #include "disabled_hart_mask.h"
 #include "htif.h"
@@ -140,9 +141,11 @@ static void wake_harts()
 void init_first_hart(uintptr_t hartid, uintptr_t dtb)
 {
   // Confirm console as early as possible
-  query_uart(dtb);
-  query_uart16550(dtb);
-  query_htif(dtb);
+// query_uart(dtb);
+// query_uart16550(dtb);
+  /*LiteX*/
+  query_uart_lr(dtb);
+//  query_htif(dtb);
   printm("bbl loader\r\n");
 
   hart_init();
@@ -158,7 +161,7 @@ void init_first_hart(uintptr_t hartid, uintptr_t dtb)
 
   wake_harts();
 
-  plic_init();
+  //  plic_init(); //SC:plic support is not tested yet
   hart_plic_init();
   //prci_test();
   memory_init();
