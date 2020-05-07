@@ -147,21 +147,17 @@ void init_first_hart(uintptr_t hartid, uintptr_t dtb)
   query_uart_lr(dtb);
 //  query_htif(dtb);
   printm("bbl loader\r\n");
-
   hart_init();
-  hls_init(0); // this might get called again from parse_config_string
-
+  hls_init(0); // this might get called again from parse_config_string 
+  
   // Find the power button early as well so die() works
   query_finisher(dtb);
-
   query_mem(dtb);
   query_harts(dtb);
   query_clint(dtb);
-  query_plic(dtb);
-
+  //query_plic(dtb);
   wake_harts();
-
-  //  plic_init(); //SC:plic support is not tested yet
+  plic_init(); //SC:plic support is not tested yet
   hart_plic_init();
   //prci_test();
   memory_init();
