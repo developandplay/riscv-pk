@@ -152,7 +152,7 @@ void init_first_hart(uintptr_t hartid, uintptr_t dtb)
 
   hart_init();
   hls_init(0); // this might get called again from parse_config_string 
-  
+
   // Find the power button early as well so die() works
   query_finisher(dtb);
 
@@ -165,7 +165,7 @@ void init_first_hart(uintptr_t hartid, uintptr_t dtb)
 
   wake_harts();
 
-  plic_init();   
+  plic_init(); 
   hart_plic_init();
   //prci_test();
   memory_init();
