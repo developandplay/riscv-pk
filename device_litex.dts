@@ -14,7 +14,7 @@
       reg = <0>;
       status = "okay";
       compatible = "riscv";
-      riscv,isa = "rv64imafdc";
+      riscv,isa = "rv64ia";//imafdc
       mmu-type = "riscv,sv48";
       clock-frequency = <1000000000>;
       CPU0_intc: interrupt-controller {
@@ -26,7 +26,7 @@
   };
   memory@80000000 {
     device_type = "memory";
-    reg = <0x0 0x80000000 0x0 0x04000000>;
+    reg = <0x0 0x80000000 0x0 0x40000000>;//Original:0x04000000 Genesys:0x40000000
   };
   soc {
     #address-cells = <2>;
@@ -39,7 +39,7 @@
       reg = <0x0 0x300000 0x0 0xc0000>;
     };
   };
-  htif {
-    compatible = "ucb,htif0";
-  };
+  uart0 {
+      compatible = "litex,uart0";
+    };
 };

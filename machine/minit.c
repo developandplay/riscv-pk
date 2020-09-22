@@ -141,23 +141,31 @@ static void wake_harts()
 void init_first_hart(uintptr_t hartid, uintptr_t dtb)
 {
   // Confirm console as early as possible
-// query_uart(dtb);
-// query_uart16550(dtb);
-  /*LiteX*/
+  #ifdef LITEX_MODE  /*LiteX*/
   query_uart_lr(dtb);
-//  query_htif(dtb);
+  #else
+  query_uart(dtb);
+  query_uart16550(dtb);
+  query_htif(dtb);
+  #endif
   printm("bbl loader\r\n");
+
   hart_init();
   hls_init(0); // this might get called again from parse_config_string 
   
   // Find the power button early as well so die() works
   query_finisher(dtb);
+
   query_mem(dtb);
   query_harts(dtb);
   query_clint(dtb);
-  //query_plic(dtb);
+  #ifndef LITEX_MODE //plic support is not tested yet with LiteX and prevents Linux bootup
+  query_plic(dtb);
+  #endif
+
   wake_harts();
-  plic_init(); //SC:plic support is not tested yet
+
+  plic_init();   
   hart_plic_init();
   //prci_test();
   memory_init();
