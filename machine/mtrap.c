@@ -7,6 +7,7 @@
 #include "vm.h"
 #include "uart.h"
 #include "uart16550.h"
+#include "uart_lr.h"
 #include "finisher.h"
 #include "fdt.h"
 #include "unprivileged_memory.h"
@@ -28,7 +29,9 @@ static uintptr_t mcall_console_putchar(uint8_t ch)
     uart16550_putchar(ch);
   } else if (htif) {
     htif_console_putchar(ch);
-  }
+  } else if (uart_lr) {
+    uart_lr_putchar(ch);
+  } 
   return 0;
 }
 
@@ -70,7 +73,10 @@ static uintptr_t mcall_console_getchar()
     return uart16550_getchar();
   } else if (htif) {
     return htif_console_getchar();
-  } else {
+  } else if (uart_lr) {
+    return uart_lr_getchar();
+  } 
+    else {
     return '\0';
   }
 }

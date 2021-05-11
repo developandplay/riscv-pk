@@ -5,6 +5,7 @@
 #include "fdt.h"
 #include "uart.h"
 #include "uart16550.h"
+#include "uart_lr.h"
 #include "finisher.h"
 #include "disabled_hart_mask.h"
 #include "htif.h"
@@ -140,9 +141,13 @@ static void wake_harts()
 void init_first_hart(uintptr_t hartid, uintptr_t dtb)
 {
   // Confirm console as early as possible
+  #ifdef LITEX_MODE  /*LiteX*/
+  query_uart_lr(dtb);
+  #else
   query_uart(dtb);
   query_uart16550(dtb);
   query_htif(dtb);
+  #endif
   printm("bbl loader\r\n");
 
   hart_init();
@@ -154,7 +159,9 @@ void init_first_hart(uintptr_t hartid, uintptr_t dtb)
   query_mem(dtb);
   query_harts(dtb);
   query_clint(dtb);
+  #ifndef LITEX_MODE //plic support is not tested yet with LiteX and prevents Linux bootup
   query_plic(dtb);
+  #endif
 
   wake_harts();
 
