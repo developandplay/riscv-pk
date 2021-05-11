@@ -6,7 +6,7 @@
 #include "mtrap.h"
 
 //TODO FPGA:50001800 Simulation:50002000
-volatile unsigned long *uart_lr = (unsigned long*)(0x50001800);
+volatile unsigned int *uart_lr = (unsigned int*)(0x50001800);
 
 #define UART_REG_RXTX       0
 #define UART_REG_TXFULL     1
@@ -61,8 +61,7 @@ static void uart_lr_done(const struct fdt_scan_node *node, void *extra)
         return;
 
     // Initialize LiteX UART
-  //  uart_lr = (void *)(uintptr_t)scan->reg;
-    // FIXME: the BIOS already initialized the registers, should we re-init?
+    uart_lr = (void *)(uintptr_t)scan->reg;
 }
 
 void query_uart_lr(uintptr_t fdt)
