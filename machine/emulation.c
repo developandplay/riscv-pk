@@ -94,7 +94,7 @@ void illegal_insn_trap(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
 #if !defined(__riscv_muldiv)
        "  .word emulate_mul_div\n"
 #else
-       "  .word truly_illegal_insn\n"
+       "  .word emulate_amo\n"
 #endif
        "  .word truly_illegal_insn\n"
 #if !defined(__riscv_muldiv) && __riscv_xlen >= 64

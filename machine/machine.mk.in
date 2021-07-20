@@ -40,3 +40,4 @@ machine_asm_srcs = \
   mentry.S \
   fp_asm.S \
   atomics.S \
+  muldiv.S \

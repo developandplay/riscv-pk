@@ -27,3 +27,7 @@ extern uint64_t amo_minud(uint64_t, uint64_t);
 
 extern uint64_t amo_maxuw(uint64_t, uint64_t);
 extern uint64_t amo_maxud(uint64_t, uint64_t);
+
+extern uint64_t mul_mulh(uint64_t, uint64_t);
+extern uint64_t mul_mulhsu(uint64_t, uint64_t);
+extern uint64_t mul_mulhu(uint64_t, uint64_t);

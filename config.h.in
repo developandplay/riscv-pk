@@ -31,7 +31,7 @@
 #undef PK_ENABLED
 
 /* Define if floating-point emulation is enabled */
-#define PK_ENABLE_FP_EMULATION
+#undef PK_ENABLE_FP_EMULATION
 
 /* Define if the RISC-V logo is to be displayed */
 #undef PK_ENABLE_LOGO
