@@ -6,7 +6,7 @@
 #include "mtrap.h"
 
 //TODO FPGA:50001800 Simulation:50002000
-volatile unsigned int *uart_lr = (unsigned int*)(0x50001800);
+volatile unsigned int *uart_lr = (unsigned int*)(0x50004000);
 
 #define UART_REG_RXTX       0
 #define UART_REG_TXFULL     1
